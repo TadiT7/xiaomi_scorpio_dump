@@ -1,0 +1,25 @@
+on post-fs-data
+	mkdir /data/local/log 0771 system system
+	chown system system /data/local/log
+
+service kernellog /vendor/bin/sh /vendor/bin/kernellog.sh
+	class main
+	disabled
+	oneshot
+
+service logcatlog /vendor/bin/sh /vendor/bin/logcatlog.sh
+        class main
+        disabled
+        oneshot
+
+on property:persist.sys.offlinelog.kernel=true
+	start kernellog
+
+on property:persist.sys.offlinelog.kernel=false
+	stop kernellog
+
+on property:persist.sys.offlinelog.logcat=true
+        start logcatlog
+
+on property:persist.sys.offlinelog.logcat=false
+        stop logcatlog
